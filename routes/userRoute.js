@@ -127,7 +127,7 @@ router.delete('/:id', (req, res, next)=> {
         });
 });
 
-router.patch('/*', (req, res)=> {
+router.all('/*', (req, res)=> {
    return res
           .status(405)
           .send();
