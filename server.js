@@ -11,7 +11,7 @@ app.use(logger('dev'));
 
 app.use(bodyParser.json());
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     res.send('Welcome Api User')
 });
 

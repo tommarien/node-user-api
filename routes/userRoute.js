@@ -127,4 +127,10 @@ router.delete('/:id', (req, res, next)=> {
         });
 });
 
+router.patch('/*', (req, res)=> {
+   return res
+          .status(405)
+          .send();
+});
+
 module.exports = router;
