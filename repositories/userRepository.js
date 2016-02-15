@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 const User = require('./../models/user');
 
 class UserRepository {
-    GetAllUsers() {
+    getAllUsers() {
         return User.find().exec();
     };
 
-    GetUserById(id) {
+    getUserById(id) {
         return User.findOne({_id: id}).exec();
     };
 }
