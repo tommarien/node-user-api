@@ -4,8 +4,24 @@ const mongoose = require('mongoose');
 const userRepository = require('./../repositories/userRepository');
 const userMapper = require('./../mappers/userMapper');
 const User = require('./../models/user');
-
 const _ = require('underscore');
+
+const validate = require("express-jsonschema").validate;
+
+// Create a json scehma
+const UserResourceSchema = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            required: true,
+        },
+        email: {
+            type:'string',
+            required: true,
+        }
+    }
+};
 
 router.get('/', (req, res, next)=> {
     userRepository.getAllUsers()
@@ -38,7 +54,9 @@ router.get('/:id', (req, res, next)=> {
         });
 });
 
-router.post('/', (req, res, next)=> {
+router.post('/', validate({body: UserResourceSchema}), (req, res, next)=> {
+
+    console.log('blah');
 
     const names = req.body.name.split(' ');
 
@@ -68,7 +86,7 @@ router.post('/', (req, res, next)=> {
         });
 });
 
-router.put('/:id', (req, res, next)=> {
+router.put('/:id', validate({body: UserResourceSchema}), (req, res, next)=> {
     userRepository.getUserById(req.params.id)
         .then((user)=> {
             if (!user) {
@@ -128,9 +146,9 @@ router.delete('/:id', (req, res, next)=> {
 });
 
 router.all('/*', (req, res)=> {
-   return res
-          .status(405)
-          .send();
+    return res
+        .status(405)
+        .send();
 });
 
 module.exports = router;
