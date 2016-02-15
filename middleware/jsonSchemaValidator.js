@@ -13,9 +13,9 @@ function jsonSchemaValidator(err, req, res, next) {
 
         // Format the response body
         responseData = {
-            statusText: 'Bad Request',
-            jsonSchemaValidation: true,
-            validations: err.validations  // All of your validation information
+            code: 'Bad Request',
+            message: "One or more input validation is invalid",
+            errors: err.validations  // All of your validation information
         };
 
         // Respond with the right content type

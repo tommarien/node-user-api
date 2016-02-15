@@ -24,11 +24,14 @@ const UserResourceSchema = {
 };
 
 router.get('/', (req, res, next)=> {
+    throw new Error('baleb');
+
     userRepository.getAllUsers()
         .then((users)=> {
             const resources = _.map(users, (user)=> {
                 return userMapper.MapFrom(user);
             });
+
             res.send(resources);
         })
         .catch((err) => {
@@ -39,15 +42,11 @@ router.get('/', (req, res, next)=> {
 router.get('/:id', (req, res, next)=> {
     userRepository.getUserById(req.params.id)
         .then((user)=> {
-            if (!user) {
-                return res
-                    .status(404)
-                    .send();
-            }
+            if (!user) return NotFound(res);
 
             const resource = userMapper.MapFrom(user);
 
-            return res.send(resource);
+            res.send(resource);
         })
         .catch((err) => {
             next(err);
@@ -89,11 +88,7 @@ router.post('/', validate({body: UserResourceSchema}), (req, res, next)=> {
 router.put('/:id', validate({body: UserResourceSchema}), (req, res, next)=> {
     userRepository.getUserById(req.params.id)
         .then((user)=> {
-            if (!user) {
-                return res
-                    .status(404)
-                    .send();
-            }
+            if (!user) return NotFound(res);
 
             const names = req.body.name.split(' ');
 
@@ -150,5 +145,14 @@ router.all('/*', (req, res)=> {
         .status(405)
         .send();
 });
+
+function NotFound(res){
+    return res
+        .status(404)
+        .send({
+            "code": "Not Found",
+            "message": "The requested resource was not found"
+        });
+}
 
 module.exports = router;
