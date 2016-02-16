@@ -11,6 +11,8 @@ export function internalServerError(err) {
             'stack': err.stack
         }
     }
+
+    return errorMessage;
 };
 
 export function notFound() {

@@ -8,6 +8,8 @@ import path from 'path';
 import mongoose from 'mongoose';
 import { notFound } from './httpErrors';
 import basicAuth from './middlewares/basicAuthMiddleware';
+import errorHandler from './middlewares/errorHandler';
+
 
 var userRoute = require('./routes/userRoute');
 
@@ -29,6 +31,8 @@ app.get('/*', (req, res) => {
     res.status(404)
        .json(notFound())
 });
+
+app.use(errorHandler);
 
 // listen for port
 const server = app.listen(config.port, function() {

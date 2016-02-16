@@ -7,24 +7,19 @@ var userResourceValidatorMiddleware = require('./../middlewares/userResourceVali
 
 var router = express.Router();
 
-router.get('/users', function (req, res) {
+router.get('/users', function (req, res, next) {
     UserModel.find(function (err, users) {
-        if (err) {
-            return res.status(500)
-                .json(httpErrors.internalServerError(err));
-        }
+        if (err) return next(err);
+
         var resources = users.map(user => userMapper.map(user));
         res.status(200)
             .json(resources);
     });
 });
 
-router.get('/users/:id', function (req, res) {
+router.get('/users/:id', function (req, res, next) {
     UserModel.findOne({_id: req.params.id}, (err, user) => {
-        if (err) {
-            return res.status(500)
-                .json(httpErrors.internalServerError(err));
-        }
+        if (err) return next(err);
 
         var resource = userMapper.map(user);
         res.status(200)
@@ -32,31 +27,25 @@ router.get('/users/:id', function (req, res) {
     });
 });
 
-router.post('/users', userResourceValidatorMiddleware, function (req, res) {
+router.post('/users', userResourceValidatorMiddleware, function (req, res, next) {
 
     // create new user
     var user = createUser(req.body);
 
     // and save to db
     user.save((err) => {
-        if (err) {
-            return res.status(500)
-                .json(httpErrors.internalServerError(err));
-        }
+        if (err) return next(err);
         res.status(201);  // created
         res.header('Location', `http://localhost:3000/api/users/${user._id}`)
         res.json(userMapper.map(user));
     })
 });
 
-router.put('/users/:id', userResourceValidatorMiddleware, (req, res) => {
+router.put('/users/:id', userResourceValidatorMiddleware, (req, res, next) => {
 
     // find and update
     UserModel.findOne({_id: req.params.id}, (err, user) => {
-        if (err) {
-            return res.status(500)
-                .json(httpErrors.internalServerError(err));
-        }
+        if (err) return next(err);
 
         // is user found?
         if (!user) {
@@ -69,10 +58,8 @@ router.put('/users/:id', userResourceValidatorMiddleware, (req, res) => {
 
         // save
         user.save(err => {
-            if (err) {
-                return res.status(500)
-                    .json(httpErrors.internalServerError(err));
-            }
+            if (err) return next(err);
+
             var resource = userMapper.map(user);
             res.status(200)
                 .json(resource);
@@ -80,20 +67,16 @@ router.put('/users/:id', userResourceValidatorMiddleware, (req, res) => {
     });
 });
 
-router.delete('/users/:id', (req, res) => {
+router.delete('/users/:id', (req, res, next) => {
     UserModel.findOne({_id: req.params.id}, (err, user) => {
-        if (err) {
-            return res.status(500)
-                .json(httpErrors.internalServerError(err));
-        }
+        if (err) return next(err);
+
         if (!user) {
             return res.status(204).send();
         }
         user.remove((err) => {
-            if (err) {
-                return res.status(500)
-                    .json(httpErrors.internalServerError(err));
-            }
+            if (err) return next(err);
+
             res.status(200)
                 .json(userMapper.map(user));
         })
