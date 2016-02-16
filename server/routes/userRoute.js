@@ -10,86 +10,94 @@ var router = express.Router();
 
 router.get('/users', function (req, res, next) {
     UserModel.find()
-        .then((users)=> {
-            var resources = users.map(user => userMapper.map(user));
-            res.status(200)
-                .json(resources);
+        .then((users) => {
+            const resources = users.map(user => userMapper.map(user));
+            res.json(resources);
         })
-        .catch((err)=> {
-            return next(err);
-        })
+        .catch((err) => {
+            next(err)
+        });
 });
 
 router.get('/users/:id', function (req, res, next) {
-    UserModel.findOne({_id: req.params.id}, (err, user) => {
-        if (err) return next(err);
+    UserModel.findOne({_id: req.params.id})
+        .then((user) => {
+            // is user found?
+            if (!user) {
+                return res.status(404)
+                    .json(notFound());
+            }
 
-        // is user found?
-        if (!user) {
-            return res.status(404)
-                .json(notFound());
-        }
-
-        var resource = userMapper.map(user);
-        res.status(200)
-            .json(resource);
-    });
+            const resource = userMapper.map(user);
+            res.json(resource);
+        })
+        .catch((err) => {
+            next(err)
+        });
 });
 
 router.post('/users', userResourceValidatorMiddleware, function (req, res, next) {
+    const user = createUser(req.body);
+    console.log('user: ', user);
 
-    // create new user
-    var user = createUser(req.body);
-
-    // and save to db
-    user.save((err) => {
-        if (err) return next(err);
-        res.status(201);  // created
-        res.header('Location', `http://localhost:3000/api/users/${user._id}`)
-        res.json(userMapper.map(user));
-    })
+    user.save()
+        .then((user)=> {
+            res.status(201);
+            res.header('Location', `http://localhost:3000/api/users/${user._id}`);
+            res.json(userMapper.map(user));
+        })
+        .catch((err)=> {
+            return next(err)
+        });
 });
 
 router.put('/users/:id', userResourceValidatorMiddleware, (req, res, next) => {
 
-    // find and update
-    UserModel.findOne({_id: req.params.id}, (err, user) => {
-        if (err) return next(err);
+    UserModel.findOne({_id: req.params.id})
+        .then((user) => {
+            // is user found?
+            if (!user) {
+                res.status(404).json(notFound());
+                return;
+            }
 
-        // is user found?
-        if (!user) {
-            return res.status(404)
-                .json(notFound());
-        }
+            // update user
+            user = updateUser(req.body, user);
 
-        // update user
-        user = updateUser(req.body, user);
-
-        // save
-        user.save(err => {
-            if (err) return next(err);
-
-            var resource = userMapper.map(user);
-            res.status(200)
-                .json(resource);
+            return user.save();
         })
-    });
+        .then((storedUser)=> {
+            if (storedUser) {
+                var resource = userMapper.map(storedUser);
+                res.status(200)
+                    .json(resource);
+            }
+        })
+        .catch((err) => {
+            next(err)
+        });
 });
 
 router.delete('/users/:id', (req, res, next) => {
-    UserModel.findOne({_id: req.params.id}, (err, user) => {
-        if (err) return next(err);
 
-        if (!user) {
-            return res.status(204).send();
-        }
-        user.remove((err) => {
-            if (err) return next(err);
+    UserModel.findOne({_id: req.params.id})
+        .then((user) => {
+            if (!user) {
+                res.status(204).send();
+                return;
+            }
 
-            res.status(200)
-                .json(userMapper.map(user));
+            return user.remove();
         })
-    });
+        .then((user)=> {
+            if (user) {
+                res.status(200)
+                    .json(userMapper.map(user));
+            }
+        })
+        .catch((err) => {
+            next(err)
+        });
 });
 
 // handle method not allowed for all other routes
