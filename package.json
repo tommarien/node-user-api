@@ -1,27 +1,17 @@
 {
-  "name": "node-user-api",
+  "name": "temp2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tommarien/node-user-api.git"
-  },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tommarien/node-user-api/issues"
-  },
-  "homepage": "https://github.com/tommarien/node-user-api#readme",
   "dependencies": {
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
-    "express-jsonschema": "^1.1.0",
     "mongoose": "^4.4.3",
-    "morgan": "^1.6.1",
-    "underscore": "^1.8.3"
+    "morgan": "^1.6.1"
   }
 }
