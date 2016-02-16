@@ -61,7 +61,7 @@ router.put('/users/:id', userResourceValidatorMiddleware, (req, res, next) => {
             // update user
             user = updateUser(req.body, user);
 
-            return user.save();
+            return SaveP(user);
         })
         .then((storedUser)=> {
             if (storedUser) {
@@ -130,6 +130,15 @@ function updateUser(resource, user) {
 function GetUserById(id) {
     return new Promise((resolve, reject)=> {
         UserModel.findOne({_id: id}, (err, result) => {
+            if (err) return reject(err);
+            return resolve(result);
+        });
+    });
+}
+
+function SaveP(model) {
+    return new Promise((resolve, reject)=> {
+        model.save((err, result) => {
             if (err) return reject(err);
             return resolve(result);
         });
