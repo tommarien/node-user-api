@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var mongoose = require('mongoose');
 var httpErrors = require('./httpErrors');
+var basicAuth = require('./middlewares/basicAuthMiddleware');
 
 var userRoute = require('./routes/userRoute');
 
@@ -15,6 +16,10 @@ mongoose.connect(config.mongoUri);
 var app = express();
 app.use(logger('dev'));
 app.use(bodyParser.json());  // add body parser
+
+// middleware
+app.use(basicAuth(config.username, config.password));
+
 app.use('/api', userRoute);
 
 // for all other routes => Not Found
