@@ -1,5 +1,5 @@
 module.exports = {
-    validate: function(resource) {
+    validate: function (resource) {
         var result = [];
         if (!resource.name) {
             result.push({
@@ -18,4 +18,5 @@ module.exports = {
             result.isValid = true;
         return result;
     }
-}
+};
+

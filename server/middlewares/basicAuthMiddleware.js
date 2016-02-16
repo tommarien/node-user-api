@@ -1,11 +1,10 @@
-module.exports = (user, password) => {
+export default (user, password) => {
     return (req, res, next) => {
 
         const authorizationHeader = req.get('authorization');
         console.log(authorizationHeader);
 
-        if (authorizationHeader)
-        {
+        if (authorizationHeader) {
             const headerParts = authorizationHeader.split(' ');
             if (headerParts.length == 2 && headerParts[0].match(/basic/i)) {
                 const userPassword = new Buffer(headerParts[1], 'base64').toString();
