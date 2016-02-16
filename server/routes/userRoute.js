@@ -20,7 +20,7 @@ router.get('/users', function (req, res, next) {
 });
 
 router.get('/users/:id', function (req, res, next) {
-    UserModel.findOne({_id: req.params.id})
+    GetUserById(req.params.id)
         .then((user) => {
             // is user found?
             if (!user) {
@@ -127,6 +127,16 @@ function updateUser(resource, user) {
         user.homeAddress.zip = resource.zip;
 
     return user;
+}
+
+
+function GetUserById(id) {
+    return new Promise((resolve, reject)=> {
+        UserModel.findOne({_id: id}, (err, result) => {
+            if (err) return reject(err);
+            return resolve(result);
+        });
+    });
 }
 
 module.exports = router;
