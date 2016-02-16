@@ -2,7 +2,8 @@ var express = require('express');
 var userMapper = require('../mappers/userMapper');
 var UserModel = require('../models/userModel');
 var userValidator = require('../validators/userValidator');
-var httpErrors = require('../httpErrors');
+import { notFound } from '../httpErrors';
+
 var userResourceValidatorMiddleware = require('./../middlewares/userResourceValidator');
 
 var router = express.Router();
@@ -20,6 +21,12 @@ router.get('/users', function (req, res, next) {
 router.get('/users/:id', function (req, res, next) {
     UserModel.findOne({_id: req.params.id}, (err, user) => {
         if (err) return next(err);
+
+        // is user found?
+        if (!user) {
+            return res.status(404)
+                .json(notFound());
+        }
 
         var resource = userMapper.map(user);
         res.status(200)
@@ -50,7 +57,7 @@ router.put('/users/:id', userResourceValidatorMiddleware, (req, res, next) => {
         // is user found?
         if (!user) {
             return res.status(404)
-                .json(httpErrors.notFound());
+                .json(notFound());
         }
 
         // update user
