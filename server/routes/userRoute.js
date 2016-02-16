@@ -1,10 +1,8 @@
 var express = require('express');
 var userMapper = require('../mappers/userMapper');
 var UserModel = require('../models/userModel');
-var userValidator = require('../validators/userValidator');
 import { notFound } from '../httpErrors';
-
-var userResourceValidatorMiddleware = require('./../middlewares/userResourceValidator');
+import userResourceValidatorMiddleware from '../middlewares/userResourceValidator';
 
 var router = express.Router();
 
