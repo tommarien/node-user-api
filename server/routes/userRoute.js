@@ -38,7 +38,6 @@ router.get('/users/:id', function (req, res, next) {
 
 router.post('/users', userResourceValidatorMiddleware, function (req, res, next) {
     const user = createUser(req.body);
-    console.log('user: ', user);
 
     user.save()
         .then((user)=> {
