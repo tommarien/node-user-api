@@ -1,6 +1,6 @@
-module.exports = {
+class UserMapper {
     map(user) {
-        var resource = {
+        const resource = {
             id: user._id,
             name: user.firstName + ' ' + user.lastName,
             age: user.age,
@@ -14,3 +14,5 @@ module.exports = {
         return resource;
     }
 }
+
+export default new UserMapper();

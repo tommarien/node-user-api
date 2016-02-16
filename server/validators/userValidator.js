@@ -1,5 +1,5 @@
-class UserValidator{
-    validate(resource){
+class UserValidator {
+    validate(resource) {
         const result = [];
         if (!resource.name) {
             result.push({
