@@ -9,13 +9,15 @@ var userResourceValidatorMiddleware = require('./../middlewares/userResourceVali
 var router = express.Router();
 
 router.get('/users', function (req, res, next) {
-    UserModel.find(function (err, users) {
-        if (err) return next(err);
-
-        var resources = users.map(user => userMapper.map(user));
-        res.status(200)
-            .json(resources);
-    });
+    UserModel.find()
+        .then((users)=> {
+            var resources = users.map(user => userMapper.map(user));
+            res.status(200)
+                .json(resources);
+        })
+        .catch((err)=> {
+            return next(err);
+        })
 });
 
 router.get('/users/:id', function (req, res, next) {
