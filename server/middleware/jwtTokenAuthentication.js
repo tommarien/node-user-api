@@ -12,13 +12,14 @@ export default function jwtTokenAuthentication(req, res, next) {
             try {
                 const payload = jwtToken.decode(match[1]);
 
-                if (moment(payload.exp) > moment()) {
+                var expiration = payload.exp;
+                if (!expiration || moment(expiration) > moment()) {
                     req.user = payload;
                     return next();
                 }
-
             }
-            catch (e) {
+            catch
+                (e) {
                 // silently ignored, jwt library throws error when not ok !!!
                 console.log(e);
             }
