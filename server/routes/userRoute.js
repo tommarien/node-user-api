@@ -144,11 +144,6 @@ router.delete('/users/:id', (req, res, next) => {
         });
 });
 
-// handle method not allowed for all other routes
-router.all('/users/*', (req, res, next) => {
-    next(new MethodNotAllowedError())
-})
-
 // helpers methods
 
 function createUser(resource) {

@@ -15,7 +15,9 @@
     "http-status-codes": "^1.0.6",
     "mongoose": "^4.4.3",
     "morgan": "^1.6.1",
-    "shortid": "^2.2.4"
+    "secure-random-string": "^1.0.0",
+    "shortid": "^2.2.4",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.5.0"

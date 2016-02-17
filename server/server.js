@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 
 import errorHandler from './middleware/errorHandler';
 import userRoute from './routes/userRoute';
+import apiKeyRoute from './routes/apiKeyRoute';
 import { NotFoundError } from './httpErrors';
 import seedData from './seedData';
 
@@ -21,7 +22,12 @@ app.use(logger('dev'));
 app.use(bodyParser.json());  // add body parser
 
 // routes
-app.use('/api', userRoute);
+app.use('/api', userRoute, apiKeyRoute);
+
+// handle method not allowed for all other user routes
+app.all('api/users/*', (req, res, next) => {
+    next(new MethodNotAllowedError())
+})
 
 // for all other routes => Not Found
 app.all('/*', (req, res, next) => {
