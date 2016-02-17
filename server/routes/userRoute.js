@@ -32,7 +32,17 @@ router.get('/users', function (req, res, next) {
         }
     }
 
-    console.log(page, pageSize);
+    if (sort.match(/[+|-]?address/)) {
+        sort = sort.replace('address', 'homeAddress.addressLine')
+    }
+
+    if (sort.match(/[+|-]?city/)) {
+        sort = sort.replace('city', 'homeAddress.city')
+    }
+
+    if (sort.match(/[+|-]?zip/)) {
+        sort = sort.replace('zip', 'homeAddress.zip')
+    }
 
     UserModel.find()
         .sort(sort)
