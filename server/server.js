@@ -24,7 +24,7 @@ app.use(bodyParser.json());  // add body parser
 app.use('/api', userRoute);
 
 // for all other routes => Not Found
-app.all('/*', (req, res) => {
+app.all('/*', (req, res, next) => {
     next(new NotFoundError());
 });
 
