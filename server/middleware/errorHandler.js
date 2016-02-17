@@ -4,11 +4,11 @@ import httpStatus from 'http-status-codes';
 
 export default function errorHandler(err, req, res, next) {
 
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
     let payload = err.payload;
 
     // special case for 500 (internal server error)
-    if (statusCode === 500) {
+    if (statusCode === httpStatus.INTERNAL_SERVER_ERROR) {
         payload = {
             'code': httpStatus.getStatusText(httpStatus.INTERNAL_SERVER_ERROR),
             'message': 'Oops! something went wrong!'
