@@ -1,6 +1,6 @@
-class UserValidator {
+export default {
     validate(resource) {
-        const result = [];
+        var result = [];
         if (!resource.name) {
             result.push({
                 key: 'name',
@@ -14,12 +14,8 @@ class UserValidator {
             })
         }
         result.isValid = false;
-
         if (result.length == 0)
             result.isValid = true;
-
         return result;
     }
 }
-
-export default new UserValidator();

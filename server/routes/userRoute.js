@@ -1,109 +1,127 @@
-var express = require('express');
-var UserModel = require('../models/userModel');
+import express from 'express';
 import userMapper from '../mappers/userMapper';
-import { notFound } from '../httpErrors';
-import userResourceValidatorMiddleware from '../middlewares/userResourceValidator';
+import UserModel from '../models/userModel';
+import userValidator from '../validators/userValidator';
+import { NotFoundError, BadRequestError } from '../httpErrors';
 
 var router = express.Router();
 
-router.get('/users', function (req, res, next) {
+// user validation middleware
+function validateUser(req, res, next) {
+    // validate
+    var result = userValidator.validate(req.body);
+    if (!result.isValid) {
+        return next(new BadRequestError(result));
+    }
+    next();
+}
+
+router.get('/users', function(req, res, next) {
     UserModel.find()
-        .then((users) => {
-            const resources = users.map(user => userMapper.map(user));
+        .then(function(users) {
+            // map and return list of users
+            var resources = users.map(user => userMapper.map(user));
             res.json(resources);
         })
-        .catch((err) => {
-            next(err)
-        });
+        .catch(function(err) {
+            next(err);
+        })
 });
 
-router.get('/users/:id', function (req, res, next) {
-    GetUserById(req.params.id)
-        .then((user) => {
-            // is user found?
+router.get('/users/:id', function(req, res, next) {
+
+    // find the specified user
+    UserModel.findOne({ _id: req.params.id })
+        .then(user => {
+
+            // user not found
             if (!user) {
-                return res.status(404)
-                    .json(notFound());
+                throw new NotFoundError();
             }
 
-            const resource = userMapper.map(user);
+            // map and return
+            var resource = userMapper.map(user);
             res.json(resource);
         })
-        .catch((err) => {
-            next(err)
+        .catch(function(err) {
+            next(err);
         });
 });
 
-router.post('/users', userResourceValidatorMiddleware, function (req, res, next) {
-    const user = createUser(req.body);
+router.post('/users', validateUser, function(req, res, next)  {
 
+    // create new user
+    var user = createUser(req.body);
+
+    // and save to db
     user.save()
-        .then((user)=> {
-            res.status(201);
-            res.header('Location', `http://localhost:3000/api/users/${user._id}`);
+        .then(user => {
+            res.status(201);  // created
+            res.location(`http://localhost:3000/api/users/${user._id}`)
             res.json(userMapper.map(user));
         })
-        .catch((err)=> {
-            return next(err)
+        .catch(function(err) {
+            next(err);
         });
 });
 
-router.put('/users/:id', userResourceValidatorMiddleware, (req, res, next) => {
+router.put('/users/:id', validateUser, (req, res, next) => {
 
-    UserModel.findOne({_id: req.params.id})
-        .then((user) => {
-            // is user found?
+    // find and update
+    UserModel.findOne({ _id: req.params.id })
+        .then(user => {
+
+            // user not found
             if (!user) {
-                res.status(404).json(notFound());
-                return;
+                throw new NotFoundError();
             }
 
             // update user
             user = updateUser(req.body, user);
 
-            return SaveP(user);
+            // save
+            return user.save();
         })
-        .then((storedUser)=> {
-            if (storedUser) {
-                var resource = userMapper.map(storedUser);
-                res.status(200)
-                    .json(resource);
-            }
+        .then(user => {
+            // map and return
+            var resource = userMapper.map(user);
+            res.status(200)
+               .json(resource);
         })
-        .catch((err) => {
-            next(err)
+        .catch(function(err) {
+            next(err);
         });
 });
 
 router.delete('/users/:id', (req, res, next) => {
-
-    UserModel.findOne({_id: req.params.id})
-        .then((user) => {
-            if (!user) {
-                res.status(204).send();
-                return;
-            }
-
+    UserModel.findOne({ _id: req.params.id })
+        .then(user => {
+            if (!user) return;  // not found
             return user.remove();
         })
-        .then((user)=> {
-            if (user) {
-                res.status(200)
-                    .json(userMapper.map(user));
+        .then(user => {
+            if (!user) {
+                // no content
+                res.status(204).send();
+            }
+            else {
+                // resource deleted
+                res.status(200).json(userMapper.map(user));
             }
         })
-        .catch((err) => {
-            next(err)
+        .catch(function(err) {
+            next(err);
         });
 });
 
 // handle method not allowed for all other routes
-router.all('/users/*', (req, res) => {
-    res.status(405)
-        .send('test');
+router.all('/users/*', (req, res, next) => {
+    next(new MethodNotAllowedError())
 })
 
-function createUser(resource, user) {
+// helpers methods
+
+function createUser(resource) {
     var user = new UserModel();
     return updateUser(resource, user);
 }
@@ -124,25 +142,6 @@ function updateUser(resource, user) {
         user.homeAddress.zip = resource.zip;
 
     return user;
-}
-
-
-function GetUserById(id) {
-    return new Promise((resolve, reject)=> {
-        UserModel.findOne({_id: id}, (err, result) => {
-            if (err) return reject(err);
-            return resolve(result);
-        });
-    });
-}
-
-function SaveP(model) {
-    return new Promise((resolve, reject)=> {
-        model.save((err, result) => {
-            if (err) return reject(err);
-            return resolve(result);
-        });
-    });
 }
 
 module.exports = router;
