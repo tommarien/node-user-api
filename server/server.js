@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import errorHandler from './middleware/errorHandler';
 import userRoute from './routes/userRoute';
 import apiKeyRoute from './routes/apiKeyRoute';
+import authRoute from './routes/authRoute';
 import { NotFoundError } from './httpErrors';
 import seedData from './seedData';
 
@@ -22,12 +23,12 @@ app.use(logger('dev'));
 app.use(bodyParser.json());  // add body parser
 
 // routes
-app.use('/api', userRoute, apiKeyRoute);
+app.use('/api', userRoute, apiKeyRoute, authRoute);
 
-// handle method not allowed for all other user routes
+// handle method not allowed for all other user routesÒ
 app.all('api/users/*', (req, res, next) => {
     next(new MethodNotAllowedError())
-})
+});
 
 // for all other routes => Not Found
 app.all('/*', (req, res, next) => {
@@ -38,6 +39,6 @@ app.all('/*', (req, res, next) => {
 app.use(errorHandler);
 
 // listen for port
-var server = app.listen(config.port, function() {
+var server = app.listen(config.port, function () {
     console.log(`Server listening on port: ${server.address().port}`);
 });

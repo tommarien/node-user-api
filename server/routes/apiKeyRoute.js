@@ -3,6 +3,7 @@ import UserModel from '../models/userModel';
 import { NotFoundError} from '../httpErrors';
 import apiKeyGenerator from '../services/apiKeyGenerator';
 import _ from 'underscore';
+import { encrypt } from '../services/encryptutils';
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.get('/users/:id/keys', (req, res, next)=> {
 });
 
 router.post('/users/:id/keys', (req, res, next)=> {
+
     let apiKey;
 
     UserModel.findOne({_id: req.params.id})
@@ -32,7 +34,7 @@ router.post('/users/:id/keys', (req, res, next)=> {
 
             var key = {
                 name: req.body.name,
-                encryptedKey: apiKey,
+                encryptedKey: encrypt('SHA256', apiKey),
             };
 
             user.apiKeys.push(key);
