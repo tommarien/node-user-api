@@ -3,6 +3,7 @@ import userMapper from '../mappers/userMapper';
 import UserModel from '../models/userModel';
 import userValidator from '../validators/userValidator';
 import { NotFoundError, BadRequestError } from '../httpErrors';
+import jwtTokenAuthentication from '../middleware/jwtTokenAuthentication';
 
 var router = express.Router();
 
@@ -78,7 +79,7 @@ router.get('/users/:id', function (req, res, next) {
         });
 });
 
-router.post('/users', validateUser, function (req, res, next) {
+router.post('/users', jwtTokenAuthentication, validateUser, function (req, res, next) {
 
     // create new user
     var user = createUser(req.body);
@@ -95,7 +96,7 @@ router.post('/users', validateUser, function (req, res, next) {
         });
 });
 
-router.put('/users/:id', validateUser, (req, res, next) => {
+router.put('/users/:id', jwtTokenAuthentication, validateUser, (req, res, next) => {
 
     // find and update
     UserModel.findOne({_id: req.params.id})
@@ -123,7 +124,7 @@ router.put('/users/:id', validateUser, (req, res, next) => {
         });
 });
 
-router.delete('/users/:id', (req, res, next) => {
+router.delete('/users/:id', jwtTokenAuthentication, (req, res, next) => {
     UserModel.findOne({_id: req.params.id})
         .then(user => {
             if (!user) return;  // not found
