@@ -23,7 +23,8 @@ router.post('/auth/login', (req, res, next) => {
                 iat: 1232312,
                 iis: 'euri:bootcamp',
                 name: `${user.firstName} ${user.lastName}`,
-                userId: user._id
+                userId: user._id,
+                role: 'admin'
             };
 
             const resource = {

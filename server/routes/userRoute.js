@@ -81,6 +81,7 @@ router.get('/users/:id', function (req, res, next) {
 
 router.post('/users', jwtTokenAuthentication, validateUser, function (req, res, next) {
 
+    console.log('user:', req.user.name);
     // create new user
     var user = createUser(req.body);
 
