@@ -3,6 +3,7 @@ import { MethodNotAllowedError, BadRequestError, UnauthorizedError } from '../ht
 import UserModel from '../models/userModel';
 import { encrypt } from '../services/encryptutils';
 import jwtToken from '../services/jwtToken';
+import moment from 'moment';
 
 const router = express.Router();
 
@@ -20,8 +21,9 @@ router.post('/auth/login', (req, res, next) => {
 
             const payload = {
                 sub: 12242344,
-                iat: 1232312,
+                iat: moment().valueOf(),
                 iis: 'euri:bootcamp',
+                exp: moment().add('minutes', 1).valueOf(),
                 name: `${user.firstName} ${user.lastName}`,
                 userId: user._id,
                 role: 'admin'
