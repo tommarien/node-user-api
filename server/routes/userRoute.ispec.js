@@ -91,7 +91,7 @@ describe('/api/users', ()=> {
         });
     });
 
-    describe('POST /:id', ()=> {
+    describe('POST /', ()=> {
         const userResource = {
             name: "Tom Marien",
             email: "tommarien@gmail.com"
