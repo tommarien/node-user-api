@@ -68,7 +68,7 @@ describe('test', () => {
             })
     });
 
-    it('returns an error if no query promised enhanced', ()=> {
+    it('returns an error if no query promised enhanced chai as promised', ()=> {
         const promise = myService.findP(null);
 
         return expect(promise).to.be.rejectedWith('Query is required');
