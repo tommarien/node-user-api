@@ -9,7 +9,7 @@ import UserModel from '../models/userModel';
 
 describe('/api/users', ()=> {
 
-    describe('HTTP GET /:id', ()=> {
+    describe('GET /:id', ()=> {
         let user;
 
         beforeEach(()=> {
@@ -89,5 +89,35 @@ describe('/api/users', ()=> {
 
             })
         });
+    });
+
+    describe('POST /:id', ()=> {
+        const userResource = {
+            name: "Tom Marien",
+            email: "tommarien@gmail.com"
+        };
+
+        it('it returns http status 201', ()=> {
+            const p = act()
+                .expect(201);
+
+            return expect(p).to.be.eventually.fulfilled;
+        });
+
+        it('it adds a new user to the store', ()=> {
+            const p = act()
+                .then(()=> {
+                    return UserModel.count();
+                });
+
+            return expect(p).to.be.eventually.equal(1);
+        });
+
+
+        function act() {
+            return request(app)
+                .post(`/api/users`)
+                .send(userResource);
+        }
     });
 });
