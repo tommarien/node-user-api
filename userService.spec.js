@@ -4,7 +4,7 @@
 import userService from './userService';
 import db from './db';
 
-describe.only('userService', ()=> {
+describe('userService', ()=> {
     let stubFactory;
 
     beforeEach(()=> {

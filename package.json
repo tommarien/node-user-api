@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha *.spec.js -w *.js --compilers js:babel-core/register --require=test.helper.js",
+    "integration-test": "mocha **/*.ispec.js -w --compilers js:babel-core/register --require=test.helper.js",
     "test-ci": "mocha *.spec.js --compilers js:babel-core/register",
     "start": "nodemon server/server --exec babel-node --presets es2015"
   },
@@ -18,13 +19,16 @@
     "http-status-codes": "^1.0.6",
     "mongoose": "^4.4.3",
     "morgan": "^1.6.1",
-    "shortid": "^2.2.4"
+    "shortid": "^2.2.4",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
     "mocha": "^2.4.5",
     "sinon": "^1.17.3",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "supertest": "^1.2.0",
+    "supertest-as-promised": "^2.0.2"
   }
 }
