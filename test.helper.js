@@ -1,9 +1,10 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import {describe, it} from 'mocha/mocha';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
-global.describe = describe;
-global.it = it;
 global.expect = expect;
+global.sinon = sinon;
