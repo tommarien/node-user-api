@@ -1,9 +1,4 @@
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-
 import myService from './myService';
-
-chai.use(chaiAsPromised);
 
 describe('test', () => {
     it('it works', ()=> {

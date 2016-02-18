@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha *.spec.js -w *.js --compilers js:babel-core/register",
+    "test": "mocha *.spec.js -w *.js --compilers js:babel-core/register --require=test.helper.js",
     "test-ci": "mocha *.spec.js --compilers js:babel-core/register",
     "start": "nodemon server/server --exec babel-node --presets es2015"
   },
