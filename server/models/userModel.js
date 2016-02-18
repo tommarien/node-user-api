@@ -4,13 +4,9 @@ import shortId from 'shortid';
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    _id: {
-        type: String,
-        default: function () {
-            return shortId.generate();
-        },
-        required: true
-    },
+    _id: { type: String,
+           default: function () { return shortId.generate();},
+           required: true },
     firstName: String,
     lastName: String,
     age: Number,
@@ -20,19 +16,6 @@ const UserSchema = new Schema({
         city: String,
         zip: String,
     },
-    apiKeys: [
-        {
-            _id: false,
-            name: {
-                type: String,
-                required: true
-            },
-            encryptedKey: {
-                type: String,
-                required: true
-            }
-        }
-    ],
 });
 
 export default mongoose.model('User', UserSchema);

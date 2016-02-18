@@ -3,7 +3,6 @@ import userMapper from '../mappers/userMapper';
 import UserModel from '../models/userModel';
 import userValidator from '../validators/userValidator';
 import { NotFoundError, BadRequestError } from '../httpErrors';
-import jwtTokenAuthentication from '../middleware/jwtTokenAuthentication';
 
 var router = express.Router();
 
@@ -17,52 +16,22 @@ function validateUser(req, res, next) {
     next();
 }
 
-router.get('/users', function (req, res, next) {
-    let page = Number(req.query.page || 0);
-    let pageSize = Number(req.query.pageSize || 20);
-    let sort = req.query.sort || '';
-
-    if (page < 0) page = 0;
-    if (pageSize < 1) pageSize = 20;
-
-    if (sort.match(/[+|-]?name/)) {
-        if (sort.startsWith('-'))
-            sort = "-firstName -lastName";
-        else {
-            sort = "firstName lastName"
-        }
-    }
-
-    if (sort.match(/[+|-]?address/)) {
-        sort = sort.replace('address', 'homeAddress.addressLine')
-    }
-
-    if (sort.match(/[+|-]?city/)) {
-        sort = sort.replace('city', 'homeAddress.city')
-    }
-
-    if (sort.match(/[+|-]?zip/)) {
-        sort = sort.replace('zip', 'homeAddress.zip')
-    }
-
+router.get('/users', function(req, res, next) {
     UserModel.find()
-        .sort(sort)
-        .skip(pageSize * page)
-        .limit(pageSize)
-        .then(function (users) {
+        .then(function(users) {
             // map and return list of users
             var resources = users.map(user => userMapper.map(user));
             res.json(resources);
         })
-        .catch(function (err) {
+        .catch(function(err) {
             next(err);
         })
 });
 
-router.get('/users/:id', function (req, res, next) {
+router.get('/users/:id', function(req, res, next) {
 
     // find the specified user
-    UserModel.findOne({_id: req.params.id})
+    UserModel.findOne({ _id: req.params.id })
         .then(user => {
 
             // user not found
@@ -74,14 +43,13 @@ router.get('/users/:id', function (req, res, next) {
             var resource = userMapper.map(user);
             res.json(resource);
         })
-        .catch(function (err) {
+        .catch(function(err) {
             next(err);
         });
 });
 
-router.post('/users', jwtTokenAuthentication, validateUser, function (req, res, next) {
+router.post('/users', validateUser, function(req, res, next)  {
 
-    console.log('user:', req.user.name);
     // create new user
     var user = createUser(req.body);
 
@@ -92,15 +60,15 @@ router.post('/users', jwtTokenAuthentication, validateUser, function (req, res, 
             res.location(`http://localhost:3000/api/users/${user._id}`)
             res.json(userMapper.map(user));
         })
-        .catch(function (err) {
+        .catch(function(err) {
             next(err);
         });
 });
 
-router.put('/users/:id', jwtTokenAuthentication, validateUser, (req, res, next) => {
+router.put('/users/:id', validateUser, (req, res, next) => {
 
     // find and update
-    UserModel.findOne({_id: req.params.id})
+    UserModel.findOne({ _id: req.params.id })
         .then(user => {
 
             // user not found
@@ -118,15 +86,15 @@ router.put('/users/:id', jwtTokenAuthentication, validateUser, (req, res, next) 
             // map and return
             var resource = userMapper.map(user);
             res.status(200)
-                .json(resource);
+               .json(resource);
         })
-        .catch(function (err) {
+        .catch(function(err) {
             next(err);
         });
 });
 
-router.delete('/users/:id', jwtTokenAuthentication, (req, res, next) => {
-    UserModel.findOne({_id: req.params.id})
+router.delete('/users/:id', (req, res, next) => {
+    UserModel.findOne({ _id: req.params.id })
         .then(user => {
             if (!user) return;  // not found
             return user.remove();
@@ -141,10 +109,15 @@ router.delete('/users/:id', jwtTokenAuthentication, (req, res, next) => {
                 res.status(200).json(userMapper.map(user));
             }
         })
-        .catch(function (err) {
+        .catch(function(err) {
             next(err);
         });
 });
+
+// handle method not allowed for all other routes
+router.all('/users/*', (req, res, next) => {
+    next(new MethodNotAllowedError())
+})
 
 // helpers methods
 
